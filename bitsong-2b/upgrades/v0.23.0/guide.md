@@ -17,8 +17,8 @@ bitsongd version --long
 # name: go-bitsong
 # server_name: bitsongd
 # client_name: bitsongcli
-# version: 0.21.6
-# commit: fbdc84594b0a65d2bbe1da4381f71932efa7efed
+# version: 0.22.0
+# commit: 
 # build_tags: netgo,ledger
 ```
 
@@ -43,7 +43,7 @@ cd go-bitsong && git pull && git checkout v0.23.0
 make install 
 ```
 
-### 5. Verify you are currently running the correct version (v0.20.2) of the `go-bitsong`:
+### 5. Verify you are currently running the correct version (v0.23.0) of the `go-bitsong`:
 ```sh
 bitsongd version --long | grep "cosmos_sdk_veresion/|commit\|version:"
 # commit: TBD
