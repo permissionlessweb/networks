@@ -38,7 +38,7 @@ cp -Rf ~/.bitsongd ./bitsongd_backup
 ### Option A: Install Go-Bitsong binary
 ```sh
 git clone https://github.com/permissionlessweb/go-bitsong
-cd go-bitsong && git pull && git checkout v023
+cd go-bitsong && git pull && git checkout v0.23.0
 make install 
 ```
 
