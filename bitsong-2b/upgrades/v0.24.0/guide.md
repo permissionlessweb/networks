@@ -14,10 +14,9 @@ The target block for this upgrade is `24505565`, which is expected to arrive at 
 
 This can be done 1 of 3 ways:
 
-1. **Manually**: Nodes not using cosmovisor will apply changes to config file manually, before installing and resuming the daemon process.
-2. **With Default Cosmovisor**: Cosmovisor supports applying custom pre-upgrade scripts. Node operators must download the pre-upgrade script, and set dedicated environment variable for Cosmovisor to execute the scrip prior to reaching the coordinated halt height. 
-3. **With Custom Cosmovisor**: A fork of cosmovisor that will download and execute any preupgrade script defined in our on-chain upgradeInfo
-<!-- This upgrade reduces our blocktimes. To do so, validators MUST modify their consensus params, BEFORE installing and applying the latest version of go-bitsong. These parameters are  located in each nodes `config.toml`, and to do so, we have provided 3 options: -->
+1. **Manually**: Nodes not using cosmovisor will **wait until the network halts**, then **manually apply `config.toml` changes** before installing the v5.0.0 binary and restarting.
+2. **With Default Cosmovisor**: Node operators must download the pre-upgrade script and set environment variables BEFORE reaching our coordinated halt height. Cosmovisor will automatically execute the script and upgrade when the halt height is reached.
+3. **With Custom Cosmovisor**: A modified cosmovisor that automatically downloads and executes pre-upgrade scripts. Operators must install the custom cosmovisor binary BEFORE reaching the coordinated halt height - no manual script download required.
 
 ### A. WITHOUT COSMOVISOR: Manual Update to `config.toml`  
 
@@ -52,11 +51,12 @@ sha256sum preUpgradeScript.sh $DAEMON_HOME/cosmovisor/preUpgradeScript.sh
 # output should be: 
 # f4e88c199864094ae025e0ce3b8bd9ff0b5e648bfe00acd80e4062ef6d3d5d0b  preUpgradeScript.sh
 # set the environment variable for cosmovisor (preferably in systemd file)
-sudo sed -i '' 's/Environment="DAEMON_RESTART_AFTER_UPGRADE=true"/&\'$'\n''Environment="COSMOVISOR_CUSTOM_PREUPGRADE=preUpgradeScript.sh"/' test.service
+sudo sed -i '' 's/Environment="DAEMON_RESTART_AFTER_UPGRADE=true"/&\'$'\n''Environment="COSMOVISOR_CUSTOM_PREUPGRADE=preUpgradeScript.sh"/' /etc/systemd/system/bitsongd.service
 # reload the daemon-process
 sudo -S systemctl daemon-reload
 sudo systemctl start bitsongd
 ```
+
 Cosmovisor will now perform the pre-upgrade scripts one reaching the coordinated halt height & prior to installing and resuming with the latest go-btisong version.
 
 ### C. WITH CUSTOM COSMOVISOR: Fully-Automatic Upgrade Via Custom Cosmovisor
@@ -64,6 +64,7 @@ Cosmovisor will now perform the pre-upgrade scripts one reaching the coordinated
 > If you would like to completely automate the pre-upgrade script, **we have released a version of cosmovisor** that will download any preUpgradeScript defined in the UpgradeInfo embedded in our upgrade proposal. You can review the modifications made [here](https://github.com/permissionlessweb/cosmos-sdk/compare/648633cc6d1eac408c87ad892f237cebd1ecc549...af61af47e79fd807559ec3148f5a0bea8ea749e9).
 
 **If you ARE already running cosmovisor**, before reaching the coordinated upgrade height:
+
 ```sh
 # kill existing cosmovisor process
 systemctl stop bitsongd.service
@@ -78,6 +79,7 @@ sudo systemctl start bitsongd
 ```
 
 **If you ARE NOT running cosmovisor**, berfore reaching the coordinated upgrade height:
+
 ```sh
 # kill any bitsongd process
 systemctl stop bitsongd.service
